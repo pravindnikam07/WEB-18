@@ -22,6 +22,7 @@
             <th>Email</th>
             <th>Job Applied</th>
             <th>Salary expected</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody id="body"></tbody>
@@ -33,7 +34,9 @@
     var bookmarkJobData = JSON.parse(localStorage.getItem("bookmarks"));
 
     var tbody = document.getElementById("body");
-    bookmarkJobData.forEach(element => {
+    DisplayData(bookmarkJobData)
+    function DisplayData(bookmarkJobData){
+      bookmarkJobData.forEach(function(element,index){
       var tr = document.createElement('tr');
       var name = document.createElement('td');
       name.innerText = element.applicantName;
@@ -43,9 +46,21 @@
       jobApplied.innerText = element.applicantRole;
       var salaryExpected = document.createElement('td');
       salaryExpected.innerText = element.applicantSalary;
+      var delet = document.createElement('td');
+      delet.innerText = 'DELETE';
+      delet.style.color = 'rgb(250, 114, 136)';
+      delet.addEventListener('click',function(){
+        deleteFun(element,index);
+      });
 
-      tr.append(name,email,jobApplied,salaryExpected)
+      tr.append(name,email,jobApplied,salaryExpected,delet)
       tbody.append(tr);
     });
+    }
+    function deleteFun(element,index){
+      bookmarkJobData.splice(index,1);
+      localStorage.setItem('bookmarks',JSON.stringify(bookmarkJobData));
+      window.location.reload();
+    }
   </script>
 </html>

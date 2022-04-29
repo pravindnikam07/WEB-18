@@ -14,7 +14,25 @@
       <div><a href="applied.html">Applied Jobs</a></div>
       <div><a href="bookmark.html">Bookmarks</a></div>
     </div>
-
+    <!-- sort by names -->
+    <select id="sortByNames">
+      <option value="none">Sort By Names</option>
+      <option value="ASC">Ascending</option>
+      <option value="DSC">Descending</option>
+    </select>
+    <!-- sort by Salary -->
+    <select id="sortBySalary">
+      <option value="none">Sort By Salary</option>
+      <option value="HTL">High To Low</option>
+      <option value="LTH">Low To High</option>
+    </select>
+    <!-- filter by category -->
+    <select id="filter">
+      <option value="none">Select Category</option>
+      <option value="FSD">FSD</option>
+      <option value="Frontend">Frontend</option>
+      <option value="Backend">Backend</option>
+    </select>
     <main>
       <table>
         <thead>
@@ -36,10 +54,16 @@
     //you need to code here
     var appliedJobData = JSON.parse(localStorage.getItem("jobList"));
     var bookmarkJobData = JSON.parse(localStorage.getItem("bookmarks")) || [];
+    var sortByNames = document.querySelector('#sortByNames');
+    var sortBySalary = document.querySelector('#sortBySalary');
+    var filterByCategory = document.querySelector("#filter");
+    
+    DisplayData(appliedJobData); //call display function
 
-
-    var tbody = document.getElementById("body");
-    appliedJobData.forEach(element => {
+    function DisplayData(appliedJobData){ // to display Data of applicant.
+      var tbody = document.getElementById("body");
+      tbody.innerHTML = null;
+      appliedJobData.forEach(function(element){
       var tr = document.createElement('tr');
       var name = document.createElement('td');
       name.innerText = element.applicantName;
@@ -54,16 +78,85 @@
       bookmark.style.color = 'teal';
       bookmark.style.cursor = 'pointer';
       bookmark.addEventListener('click',function(){
-        bookmarkFun(element);
+        bookmarkFun(element); //call bookmark function
       });
 
       tr.append(name,email,jobApplied,salaryExpected,bookmark)
       tbody.append(tr);
     });
-    function bookmarkFun(element){
+    }
+    function bookmarkFun(element){ // to bookmark the applicant.
       bookmarkJobData.push(element);
       localStorage.setItem('bookmarks',JSON.stringify(bookmarkJobData));
     }
     
+    //sort by Names
+    sortByNames.addEventListener('change',nameSort);
+    function nameSort(){
+      let selected = sortByNames.value;
+      if(selected == 'none'){
+        window.location.reload();
+      }
+      if(selected==="ASC"){
+        appliedJobData.sort(function(a,b){
+          var x = a.applicantName;
+          let y = b.applicantName;
+          if(x>y) return 1;
+          if(x<y) return -1;
+          else 0;
+        });
+        DisplayData(appliedJobData);
+      }
+      if(selected==="DSC"){
+        appliedJobData.sort(function(a,b){
+          let x = a.applicantName;
+          let y = b.applicantName;
+          if(x>y) return -1;
+          if(x<y) return 1;
+          else 0;
+        });
+        DisplayData(appliedJobData);
+      }
+    }
+    
+    //sort by Salary
+    sortBySalary.addEventListener('change',salarySort);
+    function salarySort(){
+      let selected = sortBySalary.value;
+      if(selected == 'none'){
+        window.location.reload();
+      }
+      if(selected=='HTL'){
+        appliedJobData.sort(function(a,b){
+          let x = Number(a.applicantSalary);
+          let y = Number(b.applicantSalary);
+          return y-x;
+        });
+        DisplayData(appliedJobData);
+      }
+      if(selected=='LTH'){
+        appliedJobData.sort(function(a,b){
+          let x = Number(a.applicantSalary);
+          let y = Number(b.applicantSalary);
+          return x-y;
+        });
+        DisplayData(appliedJobData);
+      }
+    }
+
+    //filter by category
+    filterByCategory.addEventListener('change',catFilter);
+    function catFilter(){
+      let selected = filterByCategory.value;
+      if(selected == 'none'){
+        DisplayData(appliedJobData);
+      }
+      else{
+        let filteredList = appliedJobData.filter(function(element){
+          return element.applicantRole === selected;
+        });
+        DisplayData(filteredList);
+      }
+    }
   </script>
 </html>
